@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 # define dataset path
 DATA_PATH = Path("data/creditcard_cleaned.csv")
@@ -50,3 +51,34 @@ print(y_test.value_counts())
 
 # inspect feature ranges in training data
 print("\nTraining Features Statistics: ", X_train[["Time", "Amount"]].describe())
+
+# initialize standardscaler
+scaler = StandardScaler()
+
+# create copies of training and testing data
+X_train_scaled = X_train.copy()
+X_test_scaled = X_test.copy()
+
+# fit scaler using training data and transforms it
+X_train_scaled[["Time", "Amount"]] = scaler.fit_transform(X_train[["Time", "Amount"]])
+
+# transform testing data using the same scaler
+X_test_scaled[["Time", "Amount"]] = scaler.transform(X_test[["Time", "Amount"]])
+
+# display scaled feature statistics
+print("\nScaled Training Feature Statistics:")
+print(X_train_scaled[["Time", "Amount"]].describe())
+
+# validate prpared features
+print("\nFeature preparation validation: ")
+
+print("Training data contains missing values:", X_train_scaled.isnull().sum().sum())
+print("Testing data contains missing values:", X_test_scaled.isnull().sum().sum())
+
+print("Training data shape:", X_train_scaled.shape)
+print("Testing data shape:", X_test_scaled.shape)
+
+print("\nScaled Training Mean:", X_train_scaled[["Time", "Amount"]].mean())
+print(
+    "\nScaled Training Standard Deviation: ", X_train_scaled[["Time", "Amount"]].std()
+)
